@@ -19,6 +19,7 @@ public:
     uint8_t off_target;
 
     int ticks;
+    unsigned long hit_time;
 
 //    Side(int a, int b, int c, int light, int off, int ticks);
 
