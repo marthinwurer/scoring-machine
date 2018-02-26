@@ -9,6 +9,7 @@
 #include "weapon_select.h"
 #include "Epee.h"
 #include "Foil.h"
+#include "Saber.h"
 
 
 //#define DEBUG
@@ -22,6 +23,7 @@ Side * other_side;
 Weapon * curr_weapon;
 Epee epee;
 Foil foil;
+Saber saber;
 
 
 void setup() {
@@ -104,6 +106,8 @@ void loop() {
             digitalWrite(right.light, LOW);
             digitalWrite(right.off_target, LOW);
             delay(ONE_SECOND / 4);
+            left.hit = false;
+            right.hit = false;
         }
     }
 
@@ -111,7 +115,7 @@ void loop() {
     // test current side against other side
     WeaponState state = curr_weapon->main_loop(*current_side, *other_side);
 
-    if ( state != IDLE) {
+    if ( state != IDLE && !current_side->hit) {
 #ifdef DEBUG
         Serial.write('h');
 #endif
@@ -123,8 +127,13 @@ void loop() {
         if (current_side->ticks >= curr_weapon->debounce_ticks()) {
             // we have a hit!
             hit = true;
+            current_side->hit = true;
             digitalWrite(BUZZER_PIN, HIGH);
-            digitalWrite(current_side->light, HIGH);
+            if( state == HIT){
+                digitalWrite(current_side->light, HIGH);
+            } else{
+                digitalWrite(current_side->off_target, HIGH);
+            }
 #ifdef DEBUG
             Serial.println(' ');
             Serial.println(micros() - current_side->hit_time);
