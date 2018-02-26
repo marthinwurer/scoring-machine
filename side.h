@@ -20,6 +20,7 @@ public:
 
     int ticks;
     unsigned long hit_time;
+    boolean hit;
 
 //    Side(int a, int b, int c, int light, int off, int ticks);
 

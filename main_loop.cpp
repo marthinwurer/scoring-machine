@@ -5,6 +5,7 @@
 #endif
 
 #include "side.h"
+#include "weapon_select.cpp"
 
 #define BUZZER_PIN 12
 #define WAIT_TIME 200
@@ -17,12 +18,15 @@
 #define EPEE_DEBOUNCE 5
 #define EPEE_DEBOUNCE_TICKS (EPEE_DEBOUNCE * NUM_TICKS / 2)
 
+//#define DEBUG
+
 boolean hit;
 int lockout;
 Side left;
 Side right;
 Side * current_side;
 Side * other_side;
+Weapon curr_weapon;
 
 void wait(){
     unsigned long start = micros();
@@ -35,6 +39,7 @@ void wait(){
 }
 
 void setup() {
+    curr_weapon = Weapon::EPEE;
     hit = true;
     lockout = 0;
 
@@ -44,6 +49,7 @@ void setup() {
     left.light = 5;
     left.off_target = 6;
     left.ticks = EPEE_DEBOUNCE_TICKS;
+    left.hit = false;
 
     left.setup_pins();
 
@@ -53,6 +59,7 @@ void setup() {
     right.light = 10;
     right.off_target = 11;
     right.ticks = EPEE_DEBOUNCE_TICKS;
+    right.hit = false;
 
     right.setup_pins();
 
@@ -61,6 +68,7 @@ void setup() {
 
     pinMode(BUZZER_PIN, OUTPUT);
 
+#ifdef DEBUG
     Serial.begin(9600);
 //    Serial.println(NUM_TICKS);
 //    delay(ONE_SECOND * 2);
@@ -84,69 +92,78 @@ void setup() {
 //    }
 //    sum /= 255;
 //    Serial.println(sum);
-
+#endif
 
 
 }
 
 void loop() {
-    // if there is a hit, test lockout
-    if (hit){
-        lockout++;
-        if( lockout > EPEE_LOCKOUT_TICKS){
-            hit = false;
-            lockout = 0;
-            digitalWrite(BUZZER_PIN, HIGH);
-            delay(ONE_SECOND);
-            digitalWrite(BUZZER_PIN, LOW);
-            delay(ONE_SECOND/2);
-            // turn off the lights
-            digitalWrite(left.light, LOW);
-            digitalWrite(right.light, LOW);
+    if( curr_weapon == Weapon::EPEE) {
+        // if there is a hit, test lockout
+        if (hit) {
+            lockout++;
+            if (lockout > EPEE_LOCKOUT_TICKS) {
+                hit = false;
+                lockout = 0;
+                digitalWrite(BUZZER_PIN, HIGH);
+                delay(ONE_SECOND * 1.5);
+                digitalWrite(BUZZER_PIN, LOW);
+                delay(ONE_SECOND / 2);
+                // turn off the lights
+                digitalWrite(left.light, LOW);
+                digitalWrite(right.light, LOW);
+                delay(ONE_SECOND / 4);
+            }
         }
-    }
-    // if lockout ticks > lockout time,
+        // if lockout ticks > lockout time,
         // wait 1 second
         // reset the system (buzzers off, lights off)
-    // test current side against other side
+        // test current side against other side
 
-    // turn on current side, then wait, then test, then reset
-    digitalWrite(current_side->a_pin, HIGH);
-    wait();
-    auto ground = digitalRead(other_side->c_pin);
-    auto b_pin = digitalRead(current_side->b_pin);
-    digitalWrite(current_side->a_pin, LOW);
+        // turn on current side, then wait, then test, then reset
+        digitalWrite(current_side->a_pin, HIGH);
+        wait();
+        auto ground = digitalRead(other_side->c_pin);
+        auto b_pin = digitalRead(current_side->b_pin);
+        digitalWrite(current_side->a_pin, LOW);
 
-    if(b_pin){
-        Serial.write('h');
-        if(ground){
-            Serial.write('g');
+#ifdef DEBUG
+        if(b_pin){
+            Serial.write('h');
+            if(ground){
+                Serial.write('g');
+            }
         }
+#endif
+
+        if (b_pin && !ground) {
+#ifdef DEBUG
+            Serial.write('h');
+#endif
+            current_side->ticks++;
+            if (current_side->hit_time == 0) {
+                current_side->hit_time = micros();
+            }
+            // check the debounce
+            if (current_side->ticks >= EPEE_DEBOUNCE_TICKS) {
+                // we have a hit!
+                hit = true;
+                digitalWrite(BUZZER_PIN, HIGH);
+                digitalWrite(current_side->light, HIGH);
+#ifdef DEBUG
+                Serial.println(' ');
+                Serial.println(micros() - current_side->hit_time);
+#endif
+            }
+        } else {
+            current_side->ticks = 0;
+            current_side->hit_time = 0;
+        }
+
+
+        // switch sides
+        auto temp = current_side;
+        current_side = other_side;
+        other_side = temp;
     }
-
-    if( b_pin && !ground){
-        Serial.write('h');
-        current_side->ticks++;
-        if (current_side->hit_time == 0){
-            current_side->hit_time = micros();
-        }
-        // check the debounce
-        if (current_side->ticks >= EPEE_DEBOUNCE_TICKS){
-            // we have a hit!
-            hit = true;
-            digitalWrite(BUZZER_PIN, HIGH);
-            digitalWrite(current_side->light, HIGH);
-            Serial.println(' ');
-            Serial.println(micros() - current_side->hit_time);
-        }
-    }else{
-        current_side->ticks = 0;
-        current_side->hit_time = 0;
-    }
-
-
-    // switch sides
-    auto temp = current_side;
-    current_side = other_side;
-    other_side = temp;
 }
