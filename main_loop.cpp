@@ -4,19 +4,10 @@
     #include "WProgram.h"
 #endif
 
+#include "config.h"
 #include "side.h"
 #include "weapon_select.cpp"
 
-#define BUZZER_PIN 12
-#define WAIT_TIME 200
-#define ONE_SECOND 1000
-
-#define NUM_TICKS (1000 / WAIT_TIME)
-
-#define EPEE_LOCKOUT 40
-#define EPEE_LOCKOUT_TICKS (EPEE_LOCKOUT * NUM_TICKS / 2)
-#define EPEE_DEBOUNCE 5
-#define EPEE_DEBOUNCE_TICKS (EPEE_DEBOUNCE * NUM_TICKS / 2)
 
 //#define DEBUG
 
@@ -26,7 +17,7 @@ Side left;
 Side right;
 Side * current_side;
 Side * other_side;
-Weapon curr_weapon;
+Weapon * curr_weapon;
 
 void wait(){
     unsigned long start = micros();
@@ -98,72 +89,60 @@ void setup() {
 }
 
 void loop() {
-    if( curr_weapon == Weapon::EPEE) {
-        // if there is a hit, test lockout
-        if (hit) {
-            lockout++;
-            if (lockout > EPEE_LOCKOUT_TICKS) {
-                hit = false;
-                lockout = 0;
-                digitalWrite(BUZZER_PIN, HIGH);
-                delay(ONE_SECOND * 1.5);
-                digitalWrite(BUZZER_PIN, LOW);
-                delay(ONE_SECOND / 2);
-                // turn off the lights
-                digitalWrite(left.light, LOW);
-                digitalWrite(right.light, LOW);
-                delay(ONE_SECOND / 4);
-            }
+
+    // if there is a hit, test lockout
+    // if lockout ticks > lockout time,
+    // wait 1 second
+    // reset the system (buzzers off, lights off)
+    if (hit) {
+        lockout++;
+        if (lockout > curr_weapon->lockout()) {
+            hit = false;
+            lockout = 0;
+            digitalWrite(BUZZER_PIN, HIGH);
+            delay(ONE_SECOND * 1.5);
+            digitalWrite(BUZZER_PIN, LOW);
+            delay(ONE_SECOND / 2);
+            // turn off the lights
+            digitalWrite(left.light, LOW);
+            digitalWrite(left.off_target, LOW);
+            digitalWrite(right.light, LOW);
+            digitalWrite(right.off_target, LOW);
+            delay(ONE_SECOND / 4);
         }
-        // if lockout ticks > lockout time,
-        // wait 1 second
-        // reset the system (buzzers off, lights off)
-        // test current side against other side
-
-        // turn on current side, then wait, then test, then reset
-        digitalWrite(current_side->a_pin, HIGH);
-        wait();
-        auto ground = digitalRead(other_side->c_pin);
-        auto b_pin = digitalRead(current_side->b_pin);
-        digitalWrite(current_side->a_pin, LOW);
-
-#ifdef DEBUG
-        if(b_pin){
-            Serial.write('h');
-            if(ground){
-                Serial.write('g');
-            }
-        }
-#endif
-
-        if (b_pin && !ground) {
-#ifdef DEBUG
-            Serial.write('h');
-#endif
-            current_side->ticks++;
-            if (current_side->hit_time == 0) {
-                current_side->hit_time = micros();
-            }
-            // check the debounce
-            if (current_side->ticks >= EPEE_DEBOUNCE_TICKS) {
-                // we have a hit!
-                hit = true;
-                digitalWrite(BUZZER_PIN, HIGH);
-                digitalWrite(current_side->light, HIGH);
-#ifdef DEBUG
-                Serial.println(' ');
-                Serial.println(micros() - current_side->hit_time);
-#endif
-            }
-        } else {
-            current_side->ticks = 0;
-            current_side->hit_time = 0;
-        }
-
-
-        // switch sides
-        auto temp = current_side;
-        current_side = other_side;
-        other_side = temp;
     }
+
+
+    // test current side against other side
+    WeaponState state = curr_weapon->main_loop(*current_side, *other_side);
+
+    if ( state != IDLE) {
+#ifdef DEBUG
+        Serial.write('h');
+#endif
+        current_side->ticks++;
+        if (current_side->hit_time == 0) {
+            current_side->hit_time = micros();
+        }
+        // check the debounce
+        if (current_side->ticks >= curr_weapon->debounce_ticks()) {
+            // we have a hit!
+            hit = true;
+            digitalWrite(BUZZER_PIN, HIGH);
+            digitalWrite(current_side->light, HIGH);
+#ifdef DEBUG
+            Serial.println(' ');
+            Serial.println(micros() - current_side->hit_time);
+#endif
+        }
+    } else {
+        current_side->ticks = 0;
+        current_side->hit_time = 0;
+    }
+
+
+    // switch sides
+    auto temp = current_side;
+    current_side = other_side;
+    other_side = temp;
 }
