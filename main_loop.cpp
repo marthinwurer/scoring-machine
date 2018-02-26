@@ -8,6 +8,7 @@
 #include "side.h"
 #include "weapon_select.h"
 #include "Epee.h"
+#include "Foil.h"
 
 
 //#define DEBUG
@@ -20,6 +21,7 @@ Side * current_side;
 Side * other_side;
 Weapon * curr_weapon;
 Epee epee;
+Foil foil;
 
 
 void setup() {
