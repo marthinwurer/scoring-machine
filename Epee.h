@@ -11,10 +11,13 @@
 
 class Epee: public Weapon {
 public:
-    virtual int main_loop(Side &current_side, Side &other_side);
+    virtual WeaponState main_loop(Side &current_side, Side &other_side);
 
+    virtual int debounce() {
+        return 5;
+    }
 
-    static int lockout(){
+    virtual int lockout(){
         return 40;
     }
 

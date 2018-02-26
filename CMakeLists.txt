@@ -5,6 +5,7 @@ project(scoring-machine)
 
 set(CMAKE_CXX_STANDARD 14)
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
 set(ARDUINO_DEFAULT_BOARD uno)
 set(ARDUINO_DEFAULT_PORT /dev/ttyACM0)

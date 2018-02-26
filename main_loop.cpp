@@ -6,7 +6,8 @@
 
 #include "config.h"
 #include "side.h"
-#include "weapon_select.cpp"
+#include "weapon_select.h"
+#include "Epee.h"
 
 
 //#define DEBUG
@@ -18,19 +19,11 @@ Side right;
 Side * current_side;
 Side * other_side;
 Weapon * curr_weapon;
+Epee epee;
 
-void wait(){
-    unsigned long start = micros();
-    unsigned long end = start + WAIT_TIME - (start % WAIT_TIME);
-    unsigned long time;
-    do{
-        time = micros();
-    }
-    while(time < end);// || time < start + WAIT_TIME);
-}
 
 void setup() {
-    curr_weapon = Weapon::EPEE;
+    curr_weapon = &epee;
     hit = true;
     lockout = 0;
 

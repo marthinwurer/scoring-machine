@@ -8,6 +8,11 @@
 #include "side.h"
 #include "config.h"
 
+namespace wait{
+    void wait();
+
+}
+
 enum WeaponState {
     IDLE, HIT, OFF_TARGET
 };
@@ -16,9 +21,9 @@ class Weapon
 {
 public:
     virtual WeaponState main_loop(Side &current_side, Side &other_side) = 0;
-    virtual static int lockout() = 0;
-    virtual static int debounce() = 0;
-    virtual static int debounce_ticks(){
+    virtual int lockout() = 0;
+    virtual int debounce() = 0;
+    virtual int debounce_ticks(){
         return debounce() * NUM_TICKS / 2;
     }
 
