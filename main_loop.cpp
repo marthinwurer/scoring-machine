@@ -32,7 +32,7 @@ void setup() {
     left.c_pin = A2;
     left.light = 5;
     left.off_target = 6;
-    left.ticks = EPEE_DEBOUNCE_TICKS;
+    left.ticks = curr_weapon->debounce_ticks();
     left.hit = false;
 
     left.setup_pins();
@@ -89,7 +89,7 @@ void loop() {
     // reset the system (buzzers off, lights off)
     if (hit) {
         lockout++;
-        if (lockout > curr_weapon->lockout()) {
+        if (lockout > curr_weapon->lockout_ticks()) {
             hit = false;
             lockout = 0;
             digitalWrite(BUZZER_PIN, HIGH);

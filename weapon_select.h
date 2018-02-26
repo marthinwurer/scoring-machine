@@ -24,7 +24,12 @@ public:
     virtual int lockout() = 0;
     virtual int debounce() = 0;
     virtual int debounce_ticks(){
+        // divide by two to get both sides
         return debounce() * NUM_TICKS / 2;
+    }
+    virtual int lockout_ticks(){
+        // don't need to divide because it's checked on both
+        return lockout() * NUM_TICKS;
     }
 
 };
