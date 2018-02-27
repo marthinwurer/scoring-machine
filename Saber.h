@@ -17,7 +17,7 @@ public:
     }
 
     virtual int lockout(){
-        return 40;
+        return 170;
     }
 
     virtual void setup(Side &side);
