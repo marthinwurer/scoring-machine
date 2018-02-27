@@ -13,13 +13,20 @@ WeaponState Foil::main_loop(Side &current_side, Side &other_side) {
     auto my_ground = digitalRead(current_side.c_pin);
     digitalWrite(current_side.b_pin, LOW);
 
+    // do ground light logic
+    if ( my_lame ){
+        digitalWrite(current_side.ground, HIGH);
+    } else {
+        digitalWrite(current_side.ground, LOW);
+    }
+
     auto retval = IDLE;
 
     if (!my_ground){ // circuit is broken, button is pressed
 
         if( their_lame){ // connected to their lame, hit
             retval = HIT;
-        } else if (their_ground ){ // hit their weapon
+        } else if ( their_ground ){ // hit their weapon
             retval = IDLE;
         } else { // not their lame or their ground, must be off target
             retval = OFF_TARGET;

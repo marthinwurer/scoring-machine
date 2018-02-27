@@ -5,6 +5,7 @@
 #ifndef SCORING_MACHINE_CONFIG_H
 #define SCORING_MACHINE_CONFIG_H
 
+#define FLOOR_PIN 3
 #define BUZZER_PIN 12
 #define BUTTON_PIN 11
 #define WAIT_TIME 200

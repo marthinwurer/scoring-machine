@@ -13,6 +13,13 @@ WeaponState Saber::main_loop(Side &current_side, Side &other_side) {
     auto my_ground = digitalRead(current_side.c_pin);
     digitalWrite(current_side.b_pin, LOW);
 
+    // do ground light logic
+    if ( my_lame ){
+        digitalWrite(current_side.ground, HIGH);
+    } else {
+        digitalWrite(current_side.ground, LOW);
+    }
+
     auto retval = IDLE;
 
     if( their_lame){ // connected to their lame, hit

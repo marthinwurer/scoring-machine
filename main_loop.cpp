@@ -154,6 +154,8 @@ void loop() {
     // test current side against other side
     WeaponState state = curr_weapon->main_loop(*current_side, *other_side);
 
+    // TODO : when changing states reset debounce
+
     if ( state != IDLE && !current_side->hit) {
 #ifdef DEBUG
         Serial.write('h');
