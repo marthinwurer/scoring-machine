@@ -10,7 +10,9 @@ void Side::setup_pins() {
     pinMode(c_pin, INPUT);
     pinMode(light, OUTPUT);
     pinMode(off_target, OUTPUT);
+    pinMode(ground, OUTPUT);
     digitalWrite(a_pin, LOW);
     digitalWrite(light, LOW);
     digitalWrite(off_target, LOW);
+    digitalWrite(ground, LOW);
 }

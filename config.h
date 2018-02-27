@@ -6,6 +6,7 @@
 #define SCORING_MACHINE_CONFIG_H
 
 #define BUZZER_PIN 12
+#define BUTTON_PIN 11
 #define WAIT_TIME 200
 #define ONE_SECOND 1000
 

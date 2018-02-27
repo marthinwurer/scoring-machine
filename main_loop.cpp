@@ -11,6 +11,12 @@
 #include "Foil.h"
 #include "Saber.h"
 
+/**
+ * Notes:
+ * 220 ohm led resistors
+ * 10000 ohm pull down
+ */
+
 
 //#define DEBUG
 
@@ -25,17 +31,21 @@ Epee epee;
 Foil foil;
 Saber saber;
 
+int current_state = 0;
+int button_debounce = 0;
+
 
 void setup() {
-    curr_weapon = &epee;
+    curr_weapon = &foil;
     hit = true;
     lockout = 0;
 
     left.a_pin = A0;
     left.b_pin = A1;
     left.c_pin = A2;
-    left.light = 5;
-    left.off_target = 6;
+    left.light = 8;
+    left.off_target = 9;
+    left.ground = 10;
     left.ticks = curr_weapon->debounce_ticks();
     left.hit = false;
 
@@ -44,8 +54,9 @@ void setup() {
     right.a_pin = A3;
     right.b_pin = A4;
     right.c_pin = A5;
-    right.light = 10;
-    right.off_target = 11;
+    right.light = 7;
+    right.off_target = 6;
+    right.ground = 5;
     right.ticks = EPEE_DEBOUNCE_TICKS;
     right.hit = false;
 
@@ -86,6 +97,29 @@ void setup() {
 }
 
 void loop() {
+
+    // check the weapon select
+
+    if ( digitalRead(BUTTON_PIN)) {
+
+        button_debounce ++;
+
+        if( button_debounce > 5 * NUM_TICKS) {
+            current_state = (current_state + 1) % 3;
+
+            if (current_state == 0) {
+                curr_weapon = &epee;
+            } else if (current_state == 1) {
+                curr_weapon = &foil;
+            } else {
+                curr_weapon = &saber;
+            }
+            delay(ONE_SECOND);
+        }
+    } else {
+        button_debounce = 0;
+    }
+
 
     // if there is a hit, test lockout
     // if lockout ticks > lockout time,

@@ -17,6 +17,7 @@ public:
     uint8_t c_pin;
     uint8_t light;
     uint8_t off_target;
+    uint8_t ground;
 
     int ticks;
     unsigned long hit_time;
