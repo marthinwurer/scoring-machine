@@ -36,7 +36,7 @@ int button_debounce = 0;
 
 
 void setup() {
-    curr_weapon = &foil;
+    curr_weapon = &epee;
     hit = true;
     lockout = 0;
 
@@ -114,6 +114,11 @@ void loop() {
             } else {
                 curr_weapon = &saber;
             }
+            curr_weapon->setup(left);
+            curr_weapon->setup(right);
+            digitalWrite(BUZZER_PIN, HIGH);
+            delay(ONE_SECOND/10);
+            digitalWrite(BUZZER_PIN, LOW);
             delay(ONE_SECOND);
         }
     } else {

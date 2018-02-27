@@ -20,6 +20,7 @@ public:
         return 40;
     }
 
+    virtual void setup(Side &side);
 };
 
 

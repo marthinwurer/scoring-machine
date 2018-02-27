@@ -28,3 +28,16 @@ WeaponState Foil::main_loop(Side &current_side, Side &other_side) {
 
     return retval;
 }
+
+void Foil::setup(Side &side) {
+    pinMode(side.a_pin, INPUT);
+    pinMode(side.b_pin, OUTPUT);
+    pinMode(side.c_pin, INPUT);
+    pinMode(side.light, OUTPUT);
+    pinMode(side.off_target, OUTPUT);
+    pinMode(side.ground, OUTPUT);
+    digitalWrite(side.b_pin, LOW);
+    digitalWrite(side.light, LOW);
+    digitalWrite(side.off_target, LOW);
+    digitalWrite(side.ground, LOW);
+}

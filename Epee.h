@@ -11,6 +11,7 @@
 
 class Epee: public Weapon {
 public:
+    virtual void setup(Side &side);
     virtual WeaponState main_loop(Side &current_side, Side &other_side);
 
     virtual int debounce() {

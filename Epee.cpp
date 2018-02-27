@@ -28,3 +28,16 @@ WeaponState Epee::main_loop(Side &current_side, Side &other_side) {
 
     return WeaponState ::IDLE;
 }
+
+void Epee::setup(Side &side) {
+    pinMode(side.a_pin, OUTPUT);
+    pinMode(side.b_pin, INPUT);
+    pinMode(side.c_pin, INPUT);
+    pinMode(side.light, OUTPUT);
+    pinMode(side.off_target, OUTPUT);
+    pinMode(side.ground, OUTPUT);
+    digitalWrite(side.a_pin, LOW);
+    digitalWrite(side.light, LOW);
+    digitalWrite(side.off_target, LOW);
+    digitalWrite(side.ground, LOW);
+}

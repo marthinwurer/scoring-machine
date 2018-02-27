@@ -20,6 +20,7 @@ enum WeaponState {
 class Weapon
 {
 public:
+    virtual void setup(Side &side) = 0;
     virtual WeaponState main_loop(Side &current_side, Side &other_side) = 0;
     virtual int lockout() = 0;
     virtual int debounce() = 0;

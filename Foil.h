@@ -18,6 +18,7 @@ class Foil : public Weapon {
         return 14;
     }
 
+    virtual void setup(Side &side);
 };
 
 
