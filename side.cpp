@@ -5,8 +5,8 @@
 #include "side.h"
 
 void Side::setup_pins() {
-    pinMode(a_pin, OUTPUT);
-    pinMode(b_pin, INPUT);
+    pinMode(a_pin, INPUT);
+    pinMode(b_pin, OUTPUT);
     pinMode(c_pin, INPUT);
     pinMode(light, OUTPUT);
     pinMode(off_target, OUTPUT);

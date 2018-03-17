@@ -5,13 +5,15 @@
 #include "Foil.h"
 
 WeaponState Foil::main_loop(Side &current_side, Side &other_side) {
+    pinMode(current_side.b_pin, OUTPUT);
     digitalWrite(current_side.b_pin, HIGH);
     wait::wait();
     auto their_ground = digitalRead(other_side.c_pin);
     auto their_lame = digitalRead(other_side.a_pin);
     auto my_lame = digitalRead(current_side.a_pin);
     auto my_ground = digitalRead(current_side.c_pin);
-    digitalWrite(current_side.b_pin, LOW);
+//    digitalWrite(current_side.b_pin, LOW);
+    pinMode(current_side.b_pin, INPUT);
 
     // do ground light logic
     if ( my_lame ){
