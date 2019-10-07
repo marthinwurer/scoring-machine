@@ -10,7 +10,12 @@ Main code needs a good refactor, but it works!
 
 follow https://github.com/arduino-cmake/Arduino-CMake-NG/wiki/Installation
 
+We need the new arduino toolkit
+
 ```
 git clone git@github.com:arduino-cmake/Arduino-CMake-NG.git
 
 ```
+
+Do not install avrdude from the repos, we need the one in the arduino toolkit.
+This gets pulled in automatically by arduino-cmake.
