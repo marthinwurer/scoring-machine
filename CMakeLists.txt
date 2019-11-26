@@ -9,3 +9,4 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall")
 
 add_subdirectory(scoring_machine)
 add_subdirectory(buzzbox)
+add_subdirectory(blink_example)

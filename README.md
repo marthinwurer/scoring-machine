@@ -19,3 +19,7 @@ git clone git@github.com:arduino-cmake/Arduino-CMake-NG.git
 
 Do not install avrdude from the repos, we need the one in the arduino toolkit.
 This gets pulled in automatically by arduino-cmake.
+
+```
+sudo cp -r ~/Downloads/arduino-1.8.10 /usr/share
+```
